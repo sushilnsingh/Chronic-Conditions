@@ -1,0 +1,31 @@
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import Binarizer
+
+def train_model(df):
+    X = df[["discount"]]
+    y = Binarizer(threshold=0.5).fit_transform(df[["win_rate"]])
+    model = LogisticRegression()
+    model.fit(X, y.ravel())
+    return model
+
+def recommend_price(model, deal_size, cost_basis):
+    best_score = -np.inf
+    best_scenario = {}
+
+    for discount in np.linspace(0.0, 0.4, 41):
+        predicted_win_rate = model.predict_proba([[discount]])[0][1]
+        revenue = deal_size * (1 - discount)
+        margin = revenue - cost_basis
+        score = margin * predicted_win_rate
+
+        if score > best_score:
+            best_score = score
+            best_scenario = {
+                "discount": round(discount * 100, 2),
+                "predicted_win_rate": round(predicted_win_rate, 2),
+                "expected_margin": round(margin, 2),
+                "score": round(score, 2)
+            }
+
+    return best_scenario

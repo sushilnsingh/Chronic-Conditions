@@ -1,0 +1,19 @@
+import pandas as pd
+import numpy as np
+
+def generate_deal_data(num_rows=1000):
+    np.random.seed(42)
+    deal_size = np.random.uniform(5000, 100000, num_rows)
+    discount = np.random.uniform(0.0, 0.4, num_rows)
+    cost_basis = deal_size * np.random.uniform(0.5, 0.8, num_rows)
+    win_rate = 0.3 + 0.5 * discount + np.random.normal(0, 0.05, num_rows)
+    win_rate = np.clip(win_rate, 0, 1)
+
+    df = pd.DataFrame({
+        "deal_size": deal_size,
+        "discount": discount,
+        "cost_basis": cost_basis,
+        "win_rate": win_rate
+    })
+
+    return df
